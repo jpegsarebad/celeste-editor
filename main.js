@@ -304,55 +304,10 @@ function getSaveData() {
   return cart_data[0] + "__lua__" + cart_data[1] + "__gfx__" + cart_data[2].slice(0, cart_data[2].length / 2) + gfxString + "__label__" + cart_data[3] + "__gff__" + cart_data[4] + "__map__" + mapString + "__sfx__" + cart_data[6] + "__music__" + cart_data[7];
 }
 
-/*
-let savePath;
 document.getElementById("save").addEventListener("click", () => {  
-  if (savePath === undefined) {
-    dialog.showSaveDialog({
-      title: "Save p8 Cartridge",
-      defaultPath: os.homedir(),
-      filters: [{
-        name: "Pico-8",
-        extensions: ["p8"]
-      }]
-    }, (path) => {
-      if (path !== "") {
-        savePath = path;
-      }
-      fs.writeFile(savePath, getSaveData(), function(err) {
-        if (err !== null) {
-          dialog.showErrorBox('File save error', err.message);
-        }
-      });
-    });
-  } else {
-    fs.writeFile(savePath, getSaveData(), function(err) {
-      if (err !== null) {
-        dialog.showErrorBox('File save error', err.message);
-      }
-    });
-  }
+  let blob = new Blob([getSaveData()], {type: "text/plain;charset=utf-8"});
+  saveAs(blob, "editor.p8");
 }, false);
-
-document.getElementById("save-as").addEventListener("click", () => {
-  dialog.showSaveDialog({
-    title: "Save p8 Cartridge",
-    defaultPath: os.homedir(),
-    filters: [{
-      name: "Pico-8",
-      extensions: ["p8"]
-    }]
-  }, (path) => {
-    if (path !== "") {
-      savePath = path;
-      fs.writeFile(savePath, getSaveData(), function(err) {
-        if (err !== null) {
-          dialog.showErrorBox('File save error', err.message);
-        }
-      });
-    }
-  });
-}, false);*/
 
 document.addEventListener("keydown", e => {
   if (levelId !== undefined) {
