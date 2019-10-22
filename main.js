@@ -141,7 +141,7 @@ function cart(e) {
   }
 
   document.body.removeChild(document.getElementById("file-input"));
-  let showIds = ["level-container", "sheet-canvas"/*, "save", "save-as"*/];
+  let showIds = ["level-container", "sheet-canvas", "save"];
   for (let id of showIds) document.getElementById(id).classList.remove("display-none");
 
   let levelBack = document.getElementById("level-back");
