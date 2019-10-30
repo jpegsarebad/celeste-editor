@@ -4,6 +4,7 @@ body {
     height: 100vh;
     background-color: darkgrey;
     flex-direction: column;
+    font-family: sans-serif;
 }
 
 .center {
@@ -14,6 +15,15 @@ body {
 
 .display-none {
     display: none;
+}
+
+#file-input-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#file-input-container > button {
+    margin: 2px;
 }
 
 #level-next, #level-back {

@@ -1,8 +1,7 @@
-function readFile(e) {
-  let file = e.target.files[0];
+function readFile(file, clearMap) {
   if (!file) return;
   let reader = new FileReader();
-  reader.onload = e => cart(e);
+  reader.onload = e => cart(e, clearMap);
   reader.readAsBinaryString(file);
 }
 
@@ -52,7 +51,7 @@ function getLevelImage(id) {
 
 let cart_data;
 
-function cart(e) {
+function cart(e, clearMap) {
   const colors = [
     [0, 0, 0],
     [29, 43, 83],
@@ -78,34 +77,42 @@ function cart(e) {
   const map_data = cart_data[5].replace(/\n/ig, ""),
     gfx_data = cart_data[2].replace(/\n/ig, "");
 
-  let x = 0;
-  let y = 0;
-  for (let i = 0; i < map_data.length; i += 2) {
-    let tile_hex = map_data[i] + map_data[i + 1];
-    let tile_int = parseInt(tile_hex, 16);
-    map_array[y][x] = tile_int;
-
-    if (x >= 127) {
-      y++;
-      x = 0;
-    } else {
-      x++;
+  if (clearMap) {
+    for (let y = 0; y < map_array.length; y++) {
+      for (let x = 0; x < map_array[y].length; x++) {
+        map_array[y][x] = 0;
+      }
     }
-  }
+  } else {
+    let x = 0;
+    let y = 0;
+    for (let i = 0; i < map_data.length; i += 2) {
+      let tile_hex = map_data[i] + map_data[i + 1];
+      let tile_int = parseInt(tile_hex, 16);
+      map_array[y][x] = tile_int;
 
-  // Convert shared bottom half of graphics to map data
-  x = 0;
-  y = 32;
-  for (let i = Math.floor(gfx_data.length / 2); i < gfx_data.length; i += 2) {
-    let tile_hex = gfx_data[i + 1] + gfx_data[i];
-    let tile_int = parseInt(tile_hex, 16);
-    map_array[y][x] = tile_int;
+      if (x >= 127) {
+        y++;
+        x = 0;
+      } else {
+        x++;
+      }
+    }
 
-    if (x >= 127) {
-      y++;
-      x = 0;
-    } else {
-      x++;
+    // Convert shared bottom half of graphics to map data
+    x = 0;
+    y = 32;
+    for (let i = Math.floor(gfx_data.length / 2); i < gfx_data.length; i += 2) {
+      let tile_hex = gfx_data[i + 1] + gfx_data[i];
+      let tile_int = parseInt(tile_hex, 16);
+      map_array[y][x] = tile_int;
+
+      if (x >= 127) {
+        y++;
+        x = 0;
+      } else {
+        x++;
+      }
     }
   }
 
@@ -140,7 +147,7 @@ function cart(e) {
     sprites.push(spr_image);
   }
 
-  document.body.removeChild(document.getElementById("file-input"));
+  document.getElementById("file-input-container").style.display = "none";
   let showIds = ["level-container", "sheet-canvas", "save"];
   for (let id of showIds) document.getElementById(id).classList.remove("display-none");
 
@@ -169,10 +176,26 @@ function cart(e) {
   requestAnimationFrame(update);
 }
 
-document.getElementById("file-input").addEventListener("change", readFile, false);
+let openFile = function(file, clearMap) {
+  let xhr = new XMLHttpRequest();
+
+  xhr.open('GET', file, true);
+  xhr.responseType = 'blob';
+  xhr.send();
+  xhr.onload = () => {
+    readFile(xhr.response, clearMap);
+  }
+};
+
+document.getElementById("file-default-button").addEventListener("click", () => openFile("celeste.p8", false), false);
+document.getElementById("file-blank-button").addEventListener("click", () => openFile("celeste.p8", true), false);
+
+let fileInput = document.getElementById("file-input");
+document.getElementById("file-input-button").addEventListener("click", () => fileInput.click(), false);
+fileInput.addEventListener("change", e => readFile(e.target.files[0]), false);
 
 // Scope mousex and mousey to be global so they can be set from within an event listener
-let levelMouseX = 0, 
+let levelMouseX = 0,
   levelMouseY = 0,
   sheetMouseX = 0,
   sheetMouseY = 0,
@@ -268,12 +291,12 @@ function update() {
     sheetContext.fillStyle = "#FFFFFF40";
     sheetContext.fillRect(tileSheetX * 8, tileSheetY * 8, 8, 8);
   }
-  
+
   sheetContext.strokeStyle = "white";
   sheetContext.strokeRect((sheetSelected % 16) * 8 - .5, Math.floor(sheetSelected / 16) * 8 - .5, 9, 9);
   sheetContext.strokeStyle = "black";
   sheetContext.strokeRect((sheetSelected % 16) * 8 - 1.5, Math.floor(sheetSelected / 16) * 8 - 1.5, 11, 11);
-  
+
   // Call function recursively using requestAnimationFrame to keep a constant framerate
   requestAnimationFrame(update);
 }
@@ -300,11 +323,11 @@ function getSaveData() {
     }
     gfxString += "\n";
   }
-  
+
   return cart_data[0] + "__lua__" + cart_data[1] + "__gfx__" + cart_data[2].slice(0, cart_data[2].length / 2) + gfxString + "__label__" + cart_data[3] + "__gff__" + cart_data[4] + "__map__" + mapString + "__sfx__" + cart_data[6] + "__music__" + cart_data[7];
 }
 
-document.getElementById("save").addEventListener("click", () => {  
+document.getElementById("save").addEventListener("click", () => {
   let blob = new Blob([getSaveData()], {type: "text/plain;charset=utf-8"});
   saveAs(blob, "editor.p8");
 }, false);

@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>CELESTE Editor</title>
-    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABVSURBVChTYyAEGEHEfwbf/2AeGmBk2MzIiEsSBlAVnImFMqDAZDEDE5QJlpSLXwnlMMDZCDeg6wYCRpMwRrACMGgPRHVL5XqEHAj8//gCrgDBZmAAAOiNG8GM3aLlAAAAAElFTkSuQmCC" type="image/png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="center">
     <button id="save" class="display-none">Save File</button>
-    <input type="file" id="file-input">
+    <div id="file-input-container">
+        <button id="file-default-button">Default map, default assets</button>
+        <button id="file-blank-button">Blank map, default assets</button>
+        <button id="file-input-button">Browse for your own *.p8</button>
+        <input type="file" id="file-input" class="display-none">
+    </div>
     <div id="level-container" class="center display-none">
         <button id="level-back">&lt;</button>
         <canvas id="level-canvas"></canvas>
